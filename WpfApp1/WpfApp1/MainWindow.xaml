@@ -14,7 +14,6 @@
         <SolidColorBrush x:Key="CardBrush"   Color="#FBFCFC"/>
         <SolidColorBrush x:Key="LineBrush"   Color="#DDD"/>
 
-        <!-- Градиентная кисть для шапки -->
         <LinearGradientBrush x:Key="HeaderGradient" StartPoint="0,0" EndPoint="1,0">
             <GradientStop Color="#2C3E50" Offset="0"/>
             <GradientStop Color="#34495E" Offset="1"/>
@@ -25,7 +24,7 @@
         <sys:String x:Key="ProjectsLabel">Проекты</sys:String>
         <sys:String x:Key="CardLabel">Карточка задачи</sys:String>
 
-        <!-- СТИЛЬ: все кнопки -->
+        <!-- СТИЛЬ: все кнопки + АНИМАЦИЯ цвета фона -->
         <Style TargetType="Button">
             <Setter Property="Padding" Value="8,4"/>
             <Setter Property="Margin"  Value="0,0,6,0"/>
@@ -33,9 +32,38 @@
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#2980B9"/>
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation
+                                    Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                                    To="#2980B9" Duration="0:0:0.2"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation
+                                    Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                                    To="#3498DB" Duration="0:0:0.2"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -79,10 +107,24 @@
             </DockPanel>
         </Border>
 
-        <!-- НИЗ: статус -->
+        <!-- НИЗ: статус + АНИМАЦИЯ пульсации -->
         <Border DockPanel.Dock="Bottom"
                 Background="{StaticResource StatusBrush}" Padding="6">
-            <TextBlock Text="{Binding Status}"/>
+            <TextBlock Text="{Binding Status, NotifyOnTargetUpdated=True}"
+                       Opacity="1">
+                <TextBlock.Triggers>
+                    <EventTrigger RoutedEvent="Binding.TargetUpdated">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation
+                                    Storyboard.TargetProperty="Opacity"
+                                    From="0.3" To="1.0"
+                                    Duration="0:0:0.6"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </TextBlock.Triggers>
+            </TextBlock>
         </Border>
 
         <!-- ЛЕВО: проекты -->
@@ -101,10 +143,24 @@
             </StackPanel>
         </Border>
 
-        <!-- ПРАВО: карточка задачи -->
+        <!-- ПРАВО: карточка задачи + АНИМАЦИЯ появления -->
         <Border DockPanel.Dock="Right"
                 Background="{StaticResource CardBrush}"
-                Padding="8" MinWidth="220">
+                Padding="8" MinWidth="220"
+                Opacity="0">
+            <Border.Triggers>
+                <EventTrigger RoutedEvent="Loaded">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="Opacity"
+                                From="0" To="1"
+                                Duration="0:0:0.5"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Border.Triggers>
+
             <StackPanel>
                 <TextBlock Text="{StaticResource CardLabel}"
                            FontWeight="Bold" Margin="0,0,0,8"/>
@@ -119,26 +175,25 @@
 
                 <TextBlock Text="Приоритет:"/>
 
-                <!-- Индикаторы приоритета: фигуры Ellipse -->
-                <UniformGrid Rows="1" Columns="3">
+                <UniformGrid Rows="1" Columns="3" Margin="0,4,0,0">
                     <Button Margin="2">
                         <StackPanel Orientation="Horizontal">
                             <Ellipse Width="12" Height="12" Fill="#2ECC71"
-                     Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                     Margin="0,0,6,0" VerticalAlignment="Center"/>
                             <TextBlock Text="Низкий" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                     <Button Margin="2">
                         <StackPanel Orientation="Horizontal">
                             <Ellipse Width="12" Height="12" Fill="#F1C40F"
-                     Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                     Margin="0,0,6,0" VerticalAlignment="Center"/>
                             <TextBlock Text="Средний" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                     <Button Margin="2">
                         <StackPanel Orientation="Horizontal">
                             <Ellipse Width="12" Height="12" Fill="#E74C3C"
-                     Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                     Margin="0,0,6,0" VerticalAlignment="Center"/>
                             <TextBlock Text="Высокий" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>

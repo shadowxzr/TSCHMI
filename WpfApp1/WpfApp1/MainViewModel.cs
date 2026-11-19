@@ -7,8 +7,9 @@ namespace TSCHMI
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        private string _status = "Готово";
+        private readonly SoundService _sound = new SoundService();   // ← ЛР6
 
+        private string _status = "Готово";
         public string Status
         {
             get => _status;
@@ -22,14 +23,32 @@ namespace TSCHMI
 
         public MainViewModel()
         {
-            AddTaskCommand = new RelayCommand(_ => Status = "Добавление задачи...");
-            DeleteTaskCommand = new RelayCommand(_ => Status = "Удаление задачи...");
-            MarkDoneCommand = new RelayCommand(_ => Status = "Задача выполнена");
-            OpenSettingsCommand = new RelayCommand(_ => MessageBox.Show("Настройки"));
+            AddTaskCommand = new RelayCommand(_ =>
+            {
+                _sound.PlayClick();                 // ← ЛР6
+                Status = "Добавление задачи...";
+            });
+
+            DeleteTaskCommand = new RelayCommand(_ =>
+            {
+                _sound.PlayClick();                 // ← ЛР6
+                Status = "Удаление задачи...";
+            });
+
+            MarkDoneCommand = new RelayCommand(_ =>
+            {
+                _sound.PlayDone();                  // ← ЛР6
+                Status = "Задача выполнена";
+            });
+
+            OpenSettingsCommand = new RelayCommand(_ =>
+            {
+                _sound.PlayClick();                 // ← ЛР6
+                MessageBox.Show("Настройки");
+            });
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-
         protected void OnPropertyChanged([CallerMemberName] string name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
